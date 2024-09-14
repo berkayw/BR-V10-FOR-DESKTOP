@@ -1,0 +1,90 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using Photon.Pun;
+using Photon.Realtime;
+using TMPro;
+using UnityEngine.Serialization;
+using UnityEngine.SocialPlatforms;
+using UnityEngine.UI;
+
+
+public class PlayerList : MonoBehaviourPunCallbacks
+{
+    public static PlayerList instance;
+    
+    [Header("UI")] public Transform playerListParent;
+    public GameObject playerListItemPrefab;
+
+
+    private List<Player> cachedPlayerList;
+
+    //private Dictionary<Player, bool> playerDictionary = new Dictionary<Player, bool>();
+
+    private void Awake()
+    {
+        instance = this;
+    }
+
+    private void Start()
+    {
+        cachedPlayerList = new List<Player>();
+
+        UpdateUI();
+    }
+
+    public override void OnJoinedRoom() //for local player
+    {
+        cachedPlayerList = new List<Player>(PhotonNetwork.PlayerList);
+
+        UpdateUI();
+    }
+
+    public override void OnPlayerEnteredRoom(Player newPlayer)
+    {
+        // Yeni oyuncu odaya katıldığında listeyi güncelle
+        cachedPlayerList.Add(newPlayer);
+
+        UpdateUI();
+    }
+
+    
+    public override void OnPlayerLeftRoom(Player otherPlayer)
+    {
+        // Bir oyuncu odadan ayrıldığında listeyi güncelle
+        cachedPlayerList.Remove(otherPlayer);
+        
+        
+        UpdateUI();
+    }
+    
+
+    void UpdateUI()
+    {
+        foreach (Transform playerItem in playerListParent)
+        {
+            Destroy(playerItem.gameObject);
+        }
+
+        foreach (var player in cachedPlayerList)
+        {
+            GameObject playerItem = Instantiate(playerListItemPrefab, playerListParent);
+
+            playerItem.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = player.NickName; // player.NickName; //room name
+            
+            playerItem.transform.GetChild(1).GetComponent<TextMeshProUGUI>().text = "unready"; //player count""
+            
+        }
+        /*foreach (var player in playerDictionary)
+        {
+            GameObject playerItem = Instantiate(playerListItemPrefab, playerListParent);
+
+            playerItem.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text =
+                player.Key.NickName; // player.NickName; //room name
+
+            playerItem.transform.GetChild(1).GetComponent<TextMeshProUGUI>().text = player.Value.ToString(); //player count""
+        }*/
+    }
+
+}
