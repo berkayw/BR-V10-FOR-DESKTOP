@@ -2,10 +2,10 @@
 
 public class IslandGenerator : MonoBehaviour
 {
-    public GameObject centerIsland;
-    public GameObject islandPrefab;
-    public float radius = 10f;
-    public int numberOfIslands;
+    public GameObject centerIsland;  // Center Island
+    public GameObject islandPrefab; 
+    public float radius = 10f;       // Distance To Center Island
+    public int numberOfIslands;       
 
     private void Start()
     {
